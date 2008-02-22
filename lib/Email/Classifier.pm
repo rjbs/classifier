@@ -2,6 +2,9 @@ use strict;
 use warnings;
 
 package Email::Classifier;
+
+our $VERSION = '0.001';
+
 use Email::Classifier::Report;
 use Email::Classifier::ReportSet;
 use Scalar::Util ();
