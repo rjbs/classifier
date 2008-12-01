@@ -1,53 +1,40 @@
-use strict;
-use warnings;
-
 package Classifier::Report;
+use Moose;
 
-sub _new {
-  my ($class, $arg) = @_;
-  my $guts = {
-    type => $arg->{type},
-    tags => $arg->{tags},
-    details => $arg->{details},
-  };
+has type     => (is => 'ro');
+has tags     => (is => 'ro', isa => 'ArrayRef', auto_deref => 1);
+has details  => (is => 'ro');
 
-  return bless $guts => $class;
+{
+  my %hack;
+  has _is_match => (
+    is  => 'ro',
+    isa => 'Bool',
+    init_arg => undef,
+    required => 1,
+    default  => sub {
+      defined $hack{is_match}
+        ? $hack{is_match}
+        : confess("call new_match or new_reject")
+    },
+  );
+
+  sub new_match {
+    my $class = shift;
+    local $hack{is_match} = 1;
+    return $class->new(@_);
+  }
+
+  sub new_reject {
+    my $class = shift;
+    local $hack{is_match} = 0;
+    return $class->new(@_);
+  }
 }
 
-sub new_match {
-  my ($class, $arg) = @_;
-  my $self = $class->_new($arg);
+sub is_match  { return   $_[0]->_is_match }
+sub is_reject { return ! $_[0]->_is_match }
 
-  $self->{is_match} = 1;
-
-  return $self;
-}
-
-sub new_reject {
-  my ($class, $arg) = @_;
-  return $class->_new($arg);
-}
-
-sub is_match {
-  return ! ! $_[0]->{is_match};
-}
-
-sub is_reject {
-  return ! $_[0]->{is_match};
-}
-
-sub details {
-  return $_[0]->{details}
-}
-
-sub tags {
-  my ($self) = @_;
-  return @{ $self->{tags} };
-}
-
-sub type {
-  my ($self) = @_;
-  return $self->{type};
-}
-
+__PACKAGE__->meta->make_immutable;
+no Moose;
 1;

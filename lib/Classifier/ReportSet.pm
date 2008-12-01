@@ -1,20 +1,23 @@
-use strict;
-use warnings;
-
 package Classifier::ReportSet;
+use Moose;
 
 use List::MoreUtils ();
 
-sub new {
-  my ($class, $reports) = @_;
+override BUILDARGS => sub {
+  my ($self, @args) = @_;
 
-  bless $reports => $class;
-}
+  return $self->SUPER::BUILDARGS({ reports => $args[0] })
+    if @args == 1 and ref $args[0] eq 'ARRAY';
 
-sub reports {
-  my ($self) = @_;
-  return @$self;
-}
+  return super;
+};
+
+has reports => (
+  is   => 'ro',
+  isa  => 'ArrayRef[Classifier::Report]',
+  auto_deref => 1,
+  required   => 1,
+);
 
 sub matches {
   my ($self) = @_;
@@ -38,4 +41,6 @@ sub reject_tags {
   return List::MoreUtils::uniq map { $_->tags } $self->rejects;
 }
 
+__PACKAGE__->meta->make_immutable;
+no Moose;
 1;

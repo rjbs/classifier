@@ -1,7 +1,5 @@
-use strict;
-use warnings;
-
 package Classifier;
+use Moose;
 
 our $VERSION = '0.001';
 
@@ -12,22 +10,23 @@ use Scalar::Util ();
 
 sub classifier_base_namespace { 'Classifier' }
 
-sub __allowed_args {} # XXX: total hack for now -- rjbs, 2008-02-22
+override BUILDARGS => sub {
+  my ($self, @args) = @_;
+  my $args = super;
 
-sub new {
-  my ($class, $arg) = @_;
-  $arg ||= {};
-
-  my $self = bless {} => $class;
-
-  for my $c_spec (@{ $arg->{classifiers} }) {
-    $self->add_classifier($c_spec);
+  if (my $c = $args->{classifiers}) {
+    $args->{classifiers} = [ map { $self->_classifier_from_spec($_) } @$c ];
   }
 
-  $self->{$_} = $arg->{$_} for $class->__allowed_args;
+  return $args;
+};
 
-  return $self;
-}
+has classifiers => (
+  is  => 'ro',
+  isa => 'ArrayRef[Classifier]',
+  auto_deref => 1,
+  default    => sub { [] },
+);
 
 sub consider {
   return $_[0]->pass;
@@ -44,10 +43,9 @@ sub _expand_class {
   return $class;
 }
 
-sub add_classifier {
+sub _classifier_from_spec {
   my ($self, $c_spec) = @_;
 
-  my $classifiers = $self->{classifiers} ||= [];
   my @args;
 
   if (defined (my $reftype = Scalar::Util::reftype $c_spec)) {
@@ -63,13 +61,13 @@ sub add_classifier {
   }
 
   my $c_class = $self->_expand_class($c_spec);
-  push @$classifiers, $c_class->new(@args);
+  return $c_class->new(@args);
 }
 
 sub classify {
   my ($self, $email) = @_;
 
-  for my $classifier ($self, @{ $self->{classifiers} }) {
+  for my $classifier ($self, $self->classifiers) {
     my $result = $classifier->consider($email);
     return $result if $result and $result->is_match;
   }
@@ -83,7 +81,7 @@ sub analyze {
   my @reports;
   push @reports, $self->consider($email);
 
-  for my $classifier (@{ $self->{classifiers} }) {
+  for my $classifier ($self->classifiers) {
     push @reports, $classifier->analyze($email)->reports;
   }
 
@@ -114,4 +112,6 @@ sub reject {
   });
 }
 
+__PACKAGE__->meta->make_immutable;
+no Moose;
 1;

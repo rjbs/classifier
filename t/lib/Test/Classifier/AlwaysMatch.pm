@@ -1,8 +1,6 @@
-use strict;
-use warnings;
-
 package Test::Classifier::AlwaysMatch;
-use base 'Classifier';
+use Moose;
+extends 'Classifier';
 
 sub default_tags { qw(test alwaysmatch) }
 sub default_type { 'alwaysmatched' }

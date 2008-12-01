@@ -1,8 +1,6 @@
-use strict;
-use warnings;
-
 package Test::Classifier::AlwaysReject;
-use base 'Classifier';
+use Moose;
+extends 'Classifier';
 
 sub default_tags { qw(test alwayspass) }
 sub default_type { 'alwayspassed' }

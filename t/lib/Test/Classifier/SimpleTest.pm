@@ -1,13 +1,15 @@
-use strict;
-use warnings;
-
 package Test::Classifier::SimpleTest;
-use base 'Classifier';
+use Moose;
+extends 'Classifier';
 
 sub default_tags { qw(test simpletest) }
 sub default_type { 'simpletest' }
 
-sub __allowed_args { qw(test) }
+has test => (
+  is   => 'ro',
+  isa  => 'CodeRef',
+  required => 1,
+);
 
 sub consider {
   my ($self, $text) = @_;
