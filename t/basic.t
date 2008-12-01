@@ -17,6 +17,8 @@ Subject: This is a Test Message
 ...and this is its body.
 END_MESSAGE
 
+is(Classifier->_expand_class('-Foo'), 'Classifier::Foo', 'basic expando test');
+
 {
   my $classifier = Test::Classifier->new({
     classifiers => [ qw(-AlwaysPass -AlwaysMatch) ],
@@ -89,4 +91,16 @@ END_MESSAGE
   my @rejects = $report_set->rejects;
   is(@rejects, 1, "one reject in ->rejects");
   ok($rejects[0] == $reject_report, "and it's the one we saw earlier");
+
+  is_deeply(
+    [ sort $report_set->match_tags ],
+    [ qw(alwaysmatch test)     ],
+    "->match_tags",
+  );
+
+  is_deeply(
+    [ sort $report_set->reject_tags ],
+    [ qw(alwaysreject test)   ],
+    "->reject_tags",
+  );
 }

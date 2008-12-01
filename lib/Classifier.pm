@@ -7,6 +7,7 @@ use Carp ();
 use Classifier::Report;
 use Classifier::ReportSet;
 use Scalar::Util ();
+use String::RewritePrefix;
 
 sub classifier_base_namespace { 'Classifier' }
 
@@ -35,12 +36,10 @@ sub consider {
 sub _expand_class {
   my ($self, $class) = @_;
 
-  if (substr($class, 0, 1) eq '-') {
-    my $prefix = $self->classifier_base_namespace;
-    substr($class, 0, 1, "$prefix\::")
-  }
-
-  return $class;
+  String::RewritePrefix->rewrite(
+    { '-' => $self->classifier_base_namespace . '::' },
+    $class,
+  );
 }
 
 sub _classifier_from_spec {

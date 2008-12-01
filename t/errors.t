@@ -26,4 +26,13 @@ use Test::Classifier::AlwaysReject;
   };
 
   like($@, qr/invalid classifier/, "can't use blessed arrayref");
+
+  eval {
+    my $x = bless [] => 'whatever';
+    my $classifier = Test::Classifier->new({
+      classifiers => [ [ -Foo => 1, 2 ] ],
+    });
+  };
+
+  like($@, qr/invalid classifier/, "can't use >2 part arefs");
 }
