@@ -1,5 +1,6 @@
 package Classifier::Report;
 use Moose;
+# ABSTRACT: a report from a Classifier
 
 has type     => (is => 'ro');
 has tags     => (is => 'ro', isa => 'ArrayRef', auto_deref => 1);
