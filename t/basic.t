@@ -52,7 +52,10 @@ END_MESSAGE
 
 {
   my $classifier = Test::Classifier->new({
-    classifiers => [ qw(-AlwaysReject -AlwaysPass -AlwaysMatch) ],
+    classifiers => [ qw(
+      -AlwaysReject -AlwaysPass
+      Test::Classifier::AlwaysMatch
+    ) ],
   });
 
   isa_ok($classifier, 'Classifier');
