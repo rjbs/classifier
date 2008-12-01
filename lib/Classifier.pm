@@ -1,5 +1,6 @@
 package Classifier;
 use Moose;
+# ABSTRACT: a framework for classifying stuff
 
 our $VERSION = '0.001';
 
