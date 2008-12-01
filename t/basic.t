@@ -81,4 +81,12 @@ END_MESSAGE
 
   ok($reject_report->is_reject, 'first report is a reject');
   ok($match_report->is_match,   'second report is a match');
+
+  my @matches = $report_set->matches;
+  is(@matches, 1, "one match in ->matches");
+  ok($matches[0] == $match_report, "and it's the one we saw earlier");
+
+  my @rejects = $report_set->rejects;
+  is(@rejects, 1, "one reject in ->rejects");
+  ok($rejects[0] == $reject_report, "and it's the one we saw earlier");
 }
