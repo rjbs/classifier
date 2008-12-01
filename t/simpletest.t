@@ -18,8 +18,8 @@ END_MESSAGE
 my $test = sub {
   my $text = shift;
 
-  return $& if $subj =~ /^.+match.+$/m;
-  return 0 if $subj =~ /reject/;
+  return $& if $text =~ /^.+match.+$/m;
+  return 0 if  $text =~ /reject/;
   return;
 };
 

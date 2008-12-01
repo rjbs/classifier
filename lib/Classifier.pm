@@ -5,6 +5,7 @@ package Classifier;
 
 our $VERSION = '0.001';
 
+use Carp ();
 use Classifier::Report;
 use Classifier::ReportSet;
 use Scalar::Util ();
@@ -52,12 +53,12 @@ sub add_classifier {
   if (defined (my $reftype = Scalar::Util::reftype $c_spec)) {
     if (!Scalar::Util::blessed $c_spec and $reftype eq 'ARRAY') {
       # XXX: This will be richer in the future. -- rjbs, 2008-02-22
-      Carp::confess "invalid classifier specification: [ @$c_spec ]"
+      Carp::confess("invalid classifier specification: [ @$c_spec ]")
         unless @$c_spec == 2;
 
       ($c_spec, @args) = @$c_spec;
     } else {
-      Carp::confess "invalid classifier specification: $c_spec";
+      Carp::confess("invalid classifier specification: $c_spec");
     }
   }
 
