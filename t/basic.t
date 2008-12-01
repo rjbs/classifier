@@ -4,11 +4,10 @@ use lib 't/lib';
 
 use Test::More 'no_plan';
 
-use Email::Abstract;
-use Test::Email::Classifier;
-use Test::Email::Classifier::AlwaysMatch;
-use Test::Email::Classifier::AlwaysPass;
-use Test::Email::Classifier::AlwaysReject;
+use Test::Classifier;
+use Test::Classifier::AlwaysMatch;
+use Test::Classifier::AlwaysPass;
+use Test::Classifier::AlwaysReject;
 
 my $TEXT = <<'END_MESSAGE';
 From: X. Ample <xa@example.com>
@@ -18,18 +17,16 @@ Subject: This is a Test Message
 ...and this is its body.
 END_MESSAGE
 
-my $email = Email::Abstract->new($TEXT);
-
 {
-  my $classifier = Test::Email::Classifier->new({
+  my $classifier = Test::Classifier->new({
     classifiers => [ qw(-AlwaysPass -AlwaysMatch) ],
   });
 
-  isa_ok($classifier, 'Email::Classifier');
+  isa_ok($classifier, 'Classifier');
 
-  my $report = $classifier->classify($email);
+  my $report = $classifier->classify($TEXT);
 
-  isa_ok($report, 'Email::Classifier::Report');
+  isa_ok($report, 'Classifier::Report');
   ok($report->is_match, 'the report is a match');
   is($report->type, 'alwaysmatched', 'got the the correct report type');
 
@@ -43,26 +40,26 @@ my $email = Email::Abstract->new($TEXT);
 }
 
 {
-  my $classifier = Test::Email::Classifier->new({
+  my $classifier = Test::Classifier->new({
     classifiers => [ qw(-AlwaysPass -AlwaysReject) ],
   });
 
-  isa_ok($classifier, 'Email::Classifier');
+  isa_ok($classifier, 'Classifier');
 
-  my $report = $classifier->classify($email);
+  my $report = $classifier->classify($TEXT);
   is($report, undef, "with only pass and reject, we get no report");
 }
 
 {
-  my $classifier = Test::Email::Classifier->new({
+  my $classifier = Test::Classifier->new({
     classifiers => [ qw(-AlwaysReject -AlwaysPass -AlwaysMatch) ],
   });
 
-  isa_ok($classifier, 'Email::Classifier');
+  isa_ok($classifier, 'Classifier');
 
-  my $report = $classifier->classify($email);
+  my $report = $classifier->classify($TEXT);
 
-  isa_ok($report, 'Email::Classifier::Report');
+  isa_ok($report, 'Classifier::Report');
   ok($report->is_match, 'the report is a match');
   is($report->type, 'alwaysmatched', 'got the the correct report type');
 
@@ -74,7 +71,7 @@ my $email = Email::Abstract->new($TEXT);
     'got the expected tags',
   );
 
-  my $report_set = $classifier->analyze($email);
+  my $report_set = $classifier->analyze($TEXT);
 
   my ($reject_report, $match_report, @rest) = $report_set->reports;
   is(@rest, 0, 'only two reports in the set');

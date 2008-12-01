@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-package Email::Classifier::ReportSet;
+package Classifier::ReportSet;
 
 use List::MoreUtils ();
 

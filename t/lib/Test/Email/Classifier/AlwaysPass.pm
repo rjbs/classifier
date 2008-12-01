@@ -1,14 +1,14 @@
 use strict;
 use warnings;
 
-package Test::Email::Classifier::AlwaysPass;
-use base 'Email::Classifier';
+package Test::Classifier::AlwaysPass;
+use base 'Classifier';
 
 sub default_tags { qw(test alwayspass) }
 sub default_type { 'alwayspassed' }
 
 sub consider {
-  my ($self, $email) = @_;
+  my ($self, $text) = @_;
 
   $self->pass;
 }

@@ -1,15 +1,15 @@
 use strict;
 use warnings;
 
-package Email::Classifier;
+package Classifier;
 
 our $VERSION = '0.001';
 
-use Email::Classifier::Report;
-use Email::Classifier::ReportSet;
+use Classifier::Report;
+use Classifier::ReportSet;
 use Scalar::Util ();
 
-sub classifier_base_namespace { 'Email::Classifier' }
+sub classifier_base_namespace { 'Classifier' }
 
 sub __allowed_args {} # XXX: total hack for now -- rjbs, 2008-02-22
 
@@ -86,13 +86,13 @@ sub analyze {
     push @reports, $classifier->analyze($email)->reports;
   }
 
-  return Email::Classifier::ReportSet->new(\@reports);
+  return Classifier::ReportSet->new(\@reports);
 }
 
 sub match {
   my ($self, $details) = @_;
 
-  return Email::Classifier::Report->new_match({
+  return Classifier::Report->new_match({
     tags    => [ $self->default_tags ],
     type    => $self->default_type,
     details => $details,
@@ -106,7 +106,7 @@ sub pass {
 sub reject {
   my ($self, $details) = @_;
 
-  return Email::Classifier::Report->new_reject({
+  return Classifier::Report->new_reject({
     tags    => [ $self->default_tags ],
     type    => $self->default_type,
     details => $details,

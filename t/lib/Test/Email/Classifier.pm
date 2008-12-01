@@ -1,9 +1,9 @@
 use strict;
 use warnings;
 
-package Test::Email::Classifier;
-use base 'Email::Classifier';
+package Test::Classifier;
+use base 'Classifier';
 
-sub classifier_base_namespace { 'Test::Email::Classifier' }
+sub classifier_base_namespace { 'Test::Classifier' }
 
 1;

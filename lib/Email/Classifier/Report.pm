@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-package Email::Classifier::Report;
+package Classifier::Report;
 
 sub _new {
   my ($class, $arg) = @_;

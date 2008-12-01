@@ -4,9 +4,8 @@ use lib 't/lib';
 
 use Test::More 'no_plan';
 
-use Email::Abstract;
-use Test::Email::Classifier;
-use Test::Email::Classifier::SimpleTest;
+use Test::Classifier;
+use Test::Classifier::SimpleTest;
 
 my $TEXT = <<'END_MESSAGE';
 From: X. Ample <xa@example.com>
@@ -16,31 +15,32 @@ Subject: This is a Test Message
 ...and this is its body.
 END_MESSAGE
 
-my $email = Email::Abstract->new($TEXT);
-
 my $test = sub {
-  my $email = shift;
-  my $subj = $email->get_header('Subject');
+  my $text = shift;
 
-  return $subj if $subj =~ /match/;
-  return 0     if $subj =~ /reject/;
+  return $& if $subj =~ /^.+match.+$/m;
+  return 0 if $subj =~ /reject/;
   return;
 };
 
-my $classifier = Test::Email::Classifier->new({
+my $classifier = Test::Classifier->new({
   classifiers => [ [ -SimpleTest => { test => $test } ] ],
 });
 
-isa_ok($classifier, 'Email::Classifier');
+isa_ok($classifier, 'Classifier');
 
 {
-  my $report = $classifier->classify($email);
+  my $report = $classifier->classify($TEXT);
   is($report, undef, 'no match on stock msg');
 }
 
 {
-  $email->set_header(Subject => 'This will match');
-  my $report = $classifier->classify($email);
+  (my $text = $TEXT) =~ s/a Test/a matching Test/;
+  my $report = $classifier->classify($text);
   ok($report->is_match, 'we matched based on new subject');
-  is($report->details->{exact_result}, 'This will match', 'correct details');
+  is(
+    $report->details->{exact_result},
+    'Subject: This is a matching Test Message',
+    'correct details',
+  );
 }
