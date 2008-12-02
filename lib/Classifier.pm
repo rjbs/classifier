@@ -5,6 +5,7 @@ use Moose;
 use Carp ();
 use Classifier::Report;
 use Classifier::ReportSet;
+use List::MoreUtils ();
 use Scalar::Util ();
 use String::RewritePrefix;
 
@@ -200,18 +201,6 @@ sub pass { return; }
 This method returns a matching report using the given details, which have no
 universally defined semantics.
 
-=cut
-
-sub match {
-  my ($self, $details) = @_;
-
-  return Classifier::Report->new_match({
-    tags    => [ $self->default_tags ],
-    type    => $self->default_type,
-    details => $details,
-  });
-}
-
 =method reject
 
   return $self->reject($details);
@@ -221,14 +210,24 @@ universally defined semantics.
 
 =cut
 
-sub reject {
-  my ($self, $details) = @_;
+BEGIN {
+  for my $method (qw(match reject)) {
+    Sub::Install::install_sub({
+      as   => $method,
+      code => sub {
+        my ($self, $details) = @_;
 
-  return Classifier::Report->new_reject({
-    tags    => [ $self->default_tags ],
-    type    => $self->default_type,
-    details => $details,
-  });
+        my $meth = "new_$method";
+        my $type = $self->default_type;
+
+        return Classifier::Report->$meth({
+          tags    => [ List::MoreUtils::uniq($type, $self->default_tags) ],
+          type    => $type,
+          details => $details,
+        });
+      }
+    });
+  }
 }
 
 =method classifier_base_namespace

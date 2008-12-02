@@ -36,7 +36,7 @@ is(Classifier->_expand_class('-Foo'), 'Classifier::Foo', 'basic expando test');
   is($details->{match_number}, 1, "we got the first match from AlwaysMatch");
   is_deeply(
     [ sort $report->tags ],
-    [ qw(alwaysmatch test) ],
+    [ qw(alwaysmatch alwaysmatched test) ],
     'got the expected tags',
   );
 }
@@ -72,7 +72,7 @@ is(Classifier->_expand_class('-Foo'), 'Classifier::Foo', 'basic expando test');
   is($details->{match_number}, 2, "this is the second match from AlwaysMatch");
   is_deeply(
     [ sort $report->tags ],
-    [ qw(alwaysmatch test) ],
+    [ qw(alwaysmatch alwaysmatched test) ],
     'got the expected tags',
   );
 
@@ -94,13 +94,13 @@ is(Classifier->_expand_class('-Foo'), 'Classifier::Foo', 'basic expando test');
 
   is_deeply(
     [ sort $report_set->match_tags ],
-    [ qw(alwaysmatch test)     ],
+    [ qw(alwaysmatch alwaysmatched test)     ],
     "->match_tags",
   );
 
   is_deeply(
     [ sort $report_set->reject_tags ],
-    [ qw(alwaysreject test)   ],
+    [ qw(alwaysreject alwaysrejected test)   ],
     "->reject_tags",
   );
 }
